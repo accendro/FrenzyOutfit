@@ -51,7 +51,7 @@ button { cursor: pointer; }
 .sort-item.active { color: var(--primary); font-weight: bold; }
 
 /* Promo Banner */
-.promo-banner img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 150px; }
+.promo-banner img { width: 100%; aspect-ratio: 3 / 1; display: block; object-fit: cover; max-height: 150px; }
 
 /* --- PRODUCT GRID (Fixed) --- */
 /* --- 1. TWO-COLUMN MASONRY WRAPPER --- */
