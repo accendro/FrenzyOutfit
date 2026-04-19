@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script>
+        ! function(f, b, e, v, n, t, s)
+        {
+            if (f.fbq) return;
+            n = f.fbq = function() {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = '2.0';
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1503656738058759');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1" /></noscript>
+
+</head>
+
+<body style="background: white;">
+
+    <div class="top-header checkout-header">
+        <div style="display:flex; align-items:center;">
+            <a href="product.html"><i class="ri-arrow-left-line menu-btn"></i></a>
+            <span style="margin-left:10px; font-weight:500;">Checkout</span>
+        </div>
+    </div>
+
+    <div class="checkout-container">
+
+        <div id="checkout-items-container">
+
+        </div>
+
+        <div style="background:#f9f9f9; padding:10px; border-radius:4px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;">
+                <span>Subtotal</span> <span id="subtotal-display">৳ 0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;">
+                <span>Delivery</span> <span id="delivery-display">৳ 0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; margin-top:5px; border-top:1px solid #ddd; padding-top:5px;">
+                <span>Total</span> <span id="total-display" style="color:var(--primary);">৳ 0</span>
+            </div>
+        </div>
+
+        <form>
+            <div class="form-group">
+                <label class="form-label">ডেলিভারি এরিয়া</label>
+
+                <select class="form-select" id="delivery-select">
+                    <option value="150">ঢাকার বাইরে - ১৫০ ৳</option>
+                    <option value="100">ঢাকার ভেতরে - ১০০ ৳</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">আপনার নাম:</label>
+                <input type="text" id="checkout-name" class="form-input" placeholder="আপনার সম্পূর্ণ নাম লিখুন" style="margin-bottom:10px;">
+                <label class="form-label">মোবাইল নাম্বার:</label>
+                <input type="tel" id="checkout-phone" class="form-input" placeholder="01XXXXXXXXX">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">ডেলিভারি ঠিকানা</label>
+                <textarea id="checkout-address" class="form-textarea" rows="2" placeholder="বাসা/ফ্ল্যাট নং, রোড, এলাকা, জেলা..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Special Note(optional)</label>
+                <textarea id="checkout-note" class="form-textarea" rows="2" placeholder="অর্ডার সম্পর্কে কোনো নির্দেশিকা থাকলে লিখুন..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Payment Method</label>
+                <select class="form-select">
+                    <option selected>ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে মূল্য পরিশোধ)</option>
+                </select>
+            </div>
+
+            <button type="button" class="place-order-btn">অর্ডার কনফার্ম করুন</button>
+        </form>
+
+    </div>
+
+    <div class="custom-confirm-modal" id="confirm-modal">
+        <div class="confirm-box">
+            <p>Remove this item from your cart?</p>
+            <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                <button onclick="closeConfirm()" class="btn-cancel">Cancel</button>
+                <button onclick="executeRemove()" class="btn-danger">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+
+        <a href="index.html" class="nav-item">
+            <i class="ri-home-5-line"></i> Home
+        </a>
+
+        <div class="nav-item" onclick="openMessenger()" style="cursor:pointer;">
+            <i class="ri-message-3-line"></i> Message
+        </div>
+
+        <a href="checkout.html" class="nav-item active">
+            <i class="ri-shopping-cart-2-fill"></i> Cart
+        </a>
+    </nav>
+
+    <script src="global.js"></script>
+
+    <script>
+        let itemToRemove = null;
+
+        const backBtn = document.querySelector('.checkout-header a');
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (document.referrer === "" || document.referrer.includes("checkout.html")) {
+                    window.location.href = 'index.html';
+                } else {
+                    window.history.back();
+                }
+            });
+        }
+
+        function loadCheckout() {
+            const cart = getCart(); 
+
+            const container = document.getElementById('checkout-items-container');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+            <div class="empty-cart-msg">
+                <i class="ri-shopping-cart-2-line"></i>
+                <h3>Your cart is empty</h3>
+                <button onclick="window.location.href='index.html'" class="place-order-btn" style="width:auto; padding:10px 20px;">Go Shop</button>
+            </div>`;
+
+                const formEl = document.querySelector('form');
+                if (formEl) formEl.style.display = 'none';
+                updateTotals(0);
+                return;
+            }
+
+            const formEl = document.querySelector('form');
+            if (formEl) formEl.style.display = 'block';
+
+            let itemsHtml = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                const p = item.product;
+                const v = item.variant;
+                const itemTotal = p.price * v.qty;
+                subtotal += itemTotal;
+
+                const colorName = v.color && v.color.name ? v.color.name : 'Default';
+                const itemImg = v.color && v.color.img ? v.color.img : p.images[0];
+
+                itemsHtml += `
+        <div class="checkout-item" style="position:relative; display:flex;">
+            <a href="product.html?id=${p.id}" style="flex-shrink:0;">
+                <img src="${itemImg}" class="checkout-img" style="cursor:pointer; display:block;">
+            </a>
+
+            <div class="checkout-details" style="margin-left:10px;">
+                <div class="checkout-title">${p.name}</div>
+                <div style="font-size:12px; color:#777; margin-top:3px;">Size: ${v.size}, Color: ${colorName}</div>
+
+                <div class="qty-control" style="margin-top:8px;">
+                    <button type="button" class="qty-btn" style="width:24px; height:24px;" onclick="changeCartQty(${index}, -1)">-</button>
+                    <span class="qty-val" style="margin:0 10px;">${v.qty}</span>
+                    <button type="button" class="qty-btn" style="width:24px; height:24px;" onclick="changeCartQty(${index}, 1)">+</button>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+                <div class="delete-btn-wrap" onclick="openConfirm(${index})"><i class="ri-delete-bin-line"></i></div>
+                <div class="checkout-price" style="margin-top:auto;">৳ ${itemTotal}</div>
+            </div>
+        </div>`;
+            });
+
+            container.innerHTML = itemsHtml;
+            updateTotals(subtotal);
+
+            try {
+                if (typeof fbq === 'function' && !window.hasFiredInitiateCheckout) {
+                    window.hasFiredInitiateCheckout = true;
+                    const productIds = cart.map(item => item.product.id);
+                    fbq('track', 'InitiateCheckout', {
+                        content_ids: productIds,
+                        content_type: 'product',
+                        value: subtotal,
+                        currency: 'BDT',
+                        num_items: cart.length
+                    });
+                }
+            } catch (e) {
+                console.warn("Pixel tracking blocked by browser.");
+            }
+
+        }
+
+        function changeCartQty(index, change) {
+            let cart = getCart();
+            cart[index].variant.qty += change;
+
+            if (cart[index].variant.qty < 1) {
+                cart[index].variant.qty = 1;
+            }
+
+            localStorage.setItem('my_cart', JSON.stringify(cart));
+            loadCheckout();
+            updateCartIcon();
+        }
+
+        function openConfirm(index) {
+            itemToRemove = index;
+            const confirmModal = document.getElementById('confirm-modal');
+            if (confirmModal) confirmModal.classList.add('active');
+        }
+
+        function closeConfirm() {
+            itemToRemove = null;
+            const confirmModal = document.getElementById('confirm-modal');
+            if (confirmModal) confirmModal.classList.remove('active');
+        }
+
+        function executeRemove() {
+            if (itemToRemove !== null) {
+                let cart = getCart();
+                cart.splice(itemToRemove, 1);
+                localStorage.setItem('my_cart', JSON.stringify(cart));
+                loadCheckout();
+                updateCartIcon();
+            }
+            closeConfirm();
+        }
+
+        function updateTotals(subtotal) {
+            if (subtotal === 0) {
+                document.getElementById('subtotal-display').innerText = `৳ 0`;
+                document.getElementById('delivery-display').innerText = `৳ 0`;
+                document.getElementById('total-display').innerText = `৳ 0`;
+                return;
+            }
+
+            const deliverySelect = document.getElementById('delivery-select');
+            const deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 0;
+
+            document.getElementById('subtotal-display').innerText = `৳ ${subtotal}`;
+            document.getElementById('delivery-display').innerText = `৳ ${deliveryFee}`;
+            document.getElementById('total-display').innerText = `৳ ${subtotal + deliveryFee}`;
+        }
+
+        const deliveryDropdown = document.getElementById('delivery-select');
+        if (deliveryDropdown) {
+            deliveryDropdown.addEventListener('change', () => {
+                loadCheckout();
+            });
+        }
+
+        function setupFormPersistence() {
+            const inputs = [
+                { id: 'checkout-name', key: 'saved_name' },
+                { id: 'checkout-phone', key: 'saved_phone' },
+                { id: 'checkout-address', key: 'saved_address' },
+                { id: 'checkout-note', key: 'saved_note' }
+            ];
+
+            inputs.forEach(inputData => {
+                const el = document.getElementById(inputData.id);
+                if (el) {
+
+                    const savedValue = localStorage.getItem(inputData.key);
+                    if (savedValue) el.value = savedValue;
+
+                    el.addEventListener('input', () => {
+                        localStorage.setItem(inputData.key, el.value);
+                    });
+                }
+            });
+        }
+
+        setupFormPersistence();
+
+        function canPlaceOrder() {
+            let orderHistory = JSON.parse(localStorage.getItem('order_history') || '[]');
+            const now = new Date().getTime();
+            orderHistory = orderHistory.filter(time => now - time < 10800000); 
+
+            if (orderHistory.length >= 2) return false;
+            return true;
+        }
+
+        function recordSuccessfulOrder() {
+            let orderHistory = JSON.parse(localStorage.getItem('order_history') || '[]');
+            orderHistory.push(new Date().getTime());
+            localStorage.setItem('order_history', JSON.stringify(orderHistory));
+        }
+
+        const placeOrderBtn = document.querySelector('.place-order-btn');
+        if (placeOrderBtn) {
+            placeOrderBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                const cart = getCart();
+                if (cart.length === 0) {
+                    showToast("Your cart is empty!", false);
+                    return;
+                }
+
+                const nameInput = document.getElementById('checkout-name');
+                const phoneInput = document.getElementById('checkout-phone');
+                const addressInput = document.getElementById('checkout-address');
+                const noteInput = document.getElementById('checkout-note');
+
+                const name = nameInput ? nameInput.value.trim() : "";
+                const phone = phoneInput ? phoneInput.value.trim() : "";
+                const address = addressInput ? addressInput.value.trim() : "";
+                const note = noteInput ? noteInput.value.trim() : "";
+
+                if (!name) { showToast("Please enter your name", false); return; }
+                if (!address) { showToast("Please enter your delivery address", false); return; }
+
+                const phoneRegex = /^(?:\+88|88)?01[3-9]\d{8}$/;
+                if (!phone) {
+                    showToast("Please enter your phone number", false);
+                    return;
+                } else if (!phoneRegex.test(phone)) {
+                    showToast("Invalid Bangladesh phone number format", false);
+                    return;
+                }
+
+                if (typeof canPlaceOrder === 'function' && !canPlaceOrder()) {
+                    showToast("Order limit reached! Please contact us on Messenger.", false);
+                    return;
+                }
+
+                placeOrderBtn.innerText = "Processing...";
+                placeOrderBtn.classList.add('btn-disabled');
+                placeOrderBtn.style.pointerEvents = 'none';
+
+                const uniqueId = 'ORD-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+
+                let ipInfoStr = "IP capture failed";
+                try {
+                    const ipRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                    if (ipRes.ok) {
+                        const ipData = await ipRes.json();
+                        ipInfoStr = `IP: ${ipData.ip} | City: ${ipData.city} | Country: ${ipData.country_code}`;
+                        if (ipData.country_code !== "BD") {
+                            ipInfoStr = "⚠️ FOREIGN/VPN DETECTED: " + ipInfoStr;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("IP fetch blocked. Proceeding anyway.");
+                }
+
+                let subtotal = 0;
+                let orderDetailsArray = [];
+                let imageLinksArray = [];
+
+                cart.forEach(item => {
+                    const p = item.product;
+                    const v = item.variant;
+                    const colorName = v.color && v.color.name ? v.color.name : 'Default';
+                    const itemTotal = p.price * v.qty;
+                    subtotal += itemTotal;
+
+                    const sheetImgs = (v.color && v.color.all_imgs) ? v.color.all_imgs : (v.color && v.color.img ? v.color.img : p.images[0]);
+
+                    orderDetailsArray.push(`${p.name}\n ......Quantity: ${v.qty}\n ......Color: ${colorName}\n ......Size: ${v.size}\n ......Price: ৳${itemTotal}`);
+                    imageLinksArray.push(sheetImgs);
+                });
+
+                const deliveryDropdown = document.getElementById('delivery-select');
+                const deliveryFee = deliveryDropdown ? parseInt(deliveryDropdown.value) : 0;
+                const finalTotal = subtotal + deliveryFee;
+
+                const orderDetailsText = orderDetailsArray.join('\n\n') + `\n\n[Delivery Fee: ৳${deliveryFee}]`;
+                const imageLinksText = imageLinksArray.join('\n\n');
+
+                const formData = new URLSearchParams();
+                formData.append('orderId', uniqueId);
+                formData.append('date', new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' }));
+                formData.append('name', name);
+                formData.append('phone', "'" + phone);
+                formData.append('address', address);
+                formData.append('note', note);
+                formData.append('orderDetails', orderDetailsText);
+                formData.append('imageLinks', imageLinksText);
+                formData.append('subtotalPrice', `৳${subtotal}`);
+                formData.append('totalPrice', `৳${finalTotal}`);
+                formData.append('ipInfo', ipInfoStr);
+
+                try {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData.toString()
+                    });
+
+                    if (typeof recordSuccessfulOrder === 'function') recordSuccessfulOrder();
+                    localStorage.setItem('order_phone', phone);
+                    localStorage.setItem('last_order', JSON.stringify(cart));
+                    localStorage.setItem('last_order_id', uniqueId);
+
+                    if (typeof fbq === 'function') {
+                        const productIds = cart.map(item => item.product.id);
+                        fbq('track', 'Purchase', {
+                            content_ids: productIds,
+                            content_type: 'product',
+                            value: finalTotal,
+                            currency: 'BDT',
+                            num_items: cart.length
+                        });
+                    }
+
+                    localStorage.removeItem('saved_name');
+                    localStorage.removeItem('saved_phone');
+                    localStorage.removeItem('saved_address');
+                    localStorage.removeItem('saved_note');
+                    localStorage.removeItem('my_cart');
+
+                    setTimeout(() => {
+                        window.location.href = 'thankyou.html';
+                    }, 500);
+
+                } catch (error) {
+                    console.error("Order Error:", error);
+                    showToast("Network error. Please check your internet and try again.", false);
+                    placeOrderBtn.innerText = "Place Order";
+                    placeOrderBtn.classList.remove('btn-disabled');
+                    placeOrderBtn.style.pointerEvents = 'auto';
+                }
+            });
+        }
+
+        loadCheckout();
+    </script>
+</body>
+
+</html>
