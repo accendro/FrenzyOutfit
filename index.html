@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+
+<!-- 👇 THIS IS THE ONLY LINE YOU CHANGE in each file — adds timestamp to URL -->
+t.src=v+'?v='+new Date().getTime();
+
+s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1503656738058759');
+fbq('track', 'PageView');
+</script>
+<!-- End Meta Pixel Code -->
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <p style="padding:10px 0; border-bottom:1px solid #eee;">Men's Fashion</p>
+        <p style="padding:10px 0; border-bottom:1px solid #eee;">Women's Fashion</p>
+    </div>
+
+<!-- Header with Brand Logo & Expandable Search -->
+<!-- Header with Center Brand Logo & Expandable Search -->
+<header class="top-header" style="display: flex;">
+    <i class="ri-menu-line menu-btn" onclick="toggleMenu()" style="position:relative; z-index:10;"></i>
+    
+    <!-- Brand Logo (Perfectly Centered) -->
+    <!-- Brand Logo (Perfectly Centered) -->
+<!-- Brand Logo (Perfectly Centered) -->
+<div class="header-brand" id="home-brand" style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:5px; font-weight:bold; font-size:18px; color: black;">
+    <img src="Images/LOGO.png" style="height: 40px; width: auto; object-fit: contain; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.4));">
+</div>
+    
+    <!-- Search Icon (Pushed to Right) -->
+    <div class="header-icons" id="home-header-icons" style="margin-left:auto; position:relative; z-index:10;">
+        <i class="ri-search-line" onclick="toggleHomeSearch()"></i>
+    </div>
+    
+    <!-- Hidden Search Box -->
+    <div class="header-search-box" id="home-search-input-box" style="display:none; flex-grow:1; margin-left:10px; background:#f0f0f0; border-radius:20px; padding:5px 15px; align-items:center; position:relative; z-index:10;">
+        <input type="text" id="home-search-val" placeholder="Search products..." style="width:100%; border:none; background:transparent; outline:none; font-size:14px;">
+        <i class="ri-close-line" onclick="toggleHomeSearch()" style="font-size:20px; margin-left:10px;"></i>
+    </div>
+</header>
+
+<!-- Dynamic Image Banner (Controlled by JSON) -->
+<div class="promo-banner" id="home-promo-banner" style="display:none;">
+    <img id="home-promo-banner-img" src="" alt="Promo Banner">
+</div>
+
+<!-- The sort bar is now automatically sticky via CSS. Initially imvisible -->
+<div class="sort-bar" style="display:none;">
+    
+    <div class="sort-item active">Best Match</div>
+    <div class="sort-item">Popularity</div>
+    <div class="sort-item" id="sort-price-btn">Price <i class="ri-expand-up-down-line" id="price-icon"></i></div>
+</div>
+
+    <!-- THIS IS THE EMPTY BOX FOR JAVASCRIPT -->
+    <div class="product-grid" id="grid">
+        <!-- JS will automatically put the JSON products here -->
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <i class="ri-home-5-fill"></i> Home
+        </a>
+        <!-- Message Button (Updated) -->
+<div class="nav-item" onclick="openMessenger()" style="cursor:pointer;">
+    <i class="ri-message-3-line"></i> Message
+</div>
+        <a href="checkout.html" class="nav-item">
+    <div class="cart-icon-wrapper">
+        <i class="ri-shopping-cart-2-line"></i>
+        <span class="cart-badge">0</span>
+    </div>
+    Cart
+</a>
+    </nav>
+    
+<script src="global.js"></script>
+<script>
+    let allProducts = [];
+let currentProducts =[];
+let priceSortDir = 'none';
+
+// --- INFINITE SCROLL VARIABLES ---
+let renderedCount = 0;
+let ITEMS_PER_LOAD = 12; // Changed to 'let' so we can temporarily increase it
+let gridProducts =[]; 
+
+// --- 1. MIX PRODUCTS ---
+function interleaveProducts(products) {
+    if (!products || products.length === 0) return[];
+    
+    let typesMap = {};
+    products.forEach(p => {
+        let t = p.type ? String(p.type).trim() : 'Uncategorized';
+        if (!typesMap[t]) typesMap[t] =[];
+        typesMap[t].push(p);
+    });
+    
+    let result =[];
+    let keys = Object.keys(typesMap);
+    let maxLength = keys.length > 0 ? Math.max(...Object.values(typesMap).map(arr => arr.length)) : 0;
+    
+    for(let i = 0; i < maxLength; i++) {
+        keys.forEach(k => {
+            if (typesMap[k] && typesMap[k][i]) result.push(typesMap[k][i]);
+        });
+    }
+    return result;
+}
+
+function toggleSortBar(show) {
+    const sortBar = document.querySelector('.sort-bar');
+    if (sortBar) sortBar.style.display = show ? 'flex' : 'none';
+}
+
+// --- 2. INITIALIZE PAGE & RESTORE SCROLL POSITION ---
+async function initShop() {
+    const fetchedProducts = await getProducts();
+    
+    // Banner Logic
+    const banners = fetchedProducts.filter(p => String(p.type).toLowerCase().includes('banner') || String(p.id).toLowerCase().includes('banner'));
+    const activeBanners = banners.filter(b => b.in_stock === true);
+    const bannerContainer = document.getElementById('home-promo-banner');
+    const bannerImg = document.getElementById('home-promo-banner-img');
+    
+    if (activeBanners.length > 0 && bannerContainer && bannerImg) {
+        bannerImg.src = activeBanners[activeBanners.length - 1].images[0];
+        bannerContainer.style.display = 'block';
+    } else if (bannerContainer) {
+        bannerContainer.style.display = 'none';
+    }
+
+    // Shop Product Logic
+    const inStockProducts = fetchedProducts.filter(p => p.in_stock === true && !String(p.type).toLowerCase().includes('banner') && !String(p.id).toLowerCase().includes('banner'));
+    allProducts = interleaveProducts(inStockProducts);
+    currentProducts = [...allProducts];
+    
+    renderSidebarMenu();
+    
+    // --- NEW: RESTORE STATE FROM SESSION MEMORY ---
+    const savedScroll = sessionStorage.getItem('homeScrollPos');
+    const savedCount = sessionStorage.getItem('homeRenderCount');
+    const savedSearch = sessionStorage.getItem('homeSearchTerm');
+    
+    // If returning from a product page, temporarily increase load limit to render everything at once
+    if (savedCount) ITEMS_PER_LOAD = parseInt(savedCount);
+    
+    const searchQuery = getUrlParam('search') || savedSearch;
+    
+    if (searchQuery) {
+        const searchInput = document.getElementById('home-search-val');
+        if (searchInput) {
+            searchInput.value = searchQuery;
+            document.getElementById('home-search-input-box').style.display = 'flex';
+            document.getElementById('home-brand').style.display = 'none';
+            document.getElementById('home-header-icons').style.display = 'none';
+        }
+        toggleSortBar(true); 
+        handleSearch(searchQuery);
+    } else {
+        toggleSortBar(false); 
+        renderGrid(currentProducts);
+    }
+    
+    // Snap back to where they were scrolled
+    if (savedScroll) {
+        setTimeout(() => {
+            window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
+        }, 100); // 100ms gives the grid time to render
+    }
+    
+    // Reset limits and clear memory so a manual refresh loads normally
+    ITEMS_PER_LOAD = 12; 
+    sessionStorage.removeItem('homeScrollPos');
+    sessionStorage.removeItem('homeRenderCount');
+    sessionStorage.removeItem('homeSearchTerm');
+    
+    setupEventListeners();
+     
+    
+}
+
+// --- 3. SIDEBAR LOGIC ---
+function renderSidebarMenu() {
+    let typesMap = {};
+    allProducts.forEach(p => {
+        if (p.type) {
+            if (!typesMap[p.type]) typesMap[p.type] = new Set();
+            if (p.sub_type) typesMap[p.type].add(p.sub_type);
+        }
+    });
+    
+    const sidebar = document.getElementById('sidebar');
+    sidebar.style.display = 'flex';
+    sidebar.style.flexDirection = 'column';
+    
+    let html = `
+        <div style="font-size:18px; font-weight:bold; color:var(--primary); padding-bottom:15px; border-bottom:1px solid #eee; margin-bottom:10px;">
+            Categories
+        </div>
+        <div style="overflow-y: auto; flex-grow: 1;">
+            <div class="menu-category active-cat" id="cat-all" onclick="filterByType('All', null, this)">
+                All Products
+            </div>`;
+    
+    for (const[type, subTypes] of Object.entries(typesMap)) {
+        html += `
+        <div class="menu-category" style="display:flex; justify-content:space-between; align-items:center;">
+            <span onclick="filterByType('${type}', null, this.parentElement)" style="flex-grow:1;">${type}</span>
+            <i class="ri-arrow-down-s-line" onclick="this.parentElement.classList.toggle('open')" style="padding:10px; margin:-10px;"></i>
+        </div>
+        <div class="sub-menu">`;
+        subTypes.forEach(sub => { html += `<p onclick="filterByType('${type}', '${sub}', this)">${sub}</p>`; });
+        html += `</div>`;
+    }
+    
+    html += `</div><div style="margin-top:auto; border-top:1px solid #eee; padding-top:15px;">
+             <p style="color:#666; font-size:15px; cursor:pointer; font-weight:500;"><i class="ri-information-line"></i> About Us</p>
+             </div>`;
+    sidebar.innerHTML = html;
+}
+
+function filterByType(type, subType = null, clickedElement = null) {
+    // 1. Remove highlight from all elements
+    document.querySelectorAll('.menu-category, .menu-category span, .sub-menu p').forEach(el => el.classList.remove('active-cat'));
+    
+    if (clickedElement) {
+        // 2. Highlight the clicked element
+        clickedElement.classList.add('active-cat');
+        
+        // --- NEW: AUTO-OPEN ACCORDION ---
+        // If they clicked a main category (not "All" and not a sub-type), force the accordion open!
+        if (type !== 'All' && !subType && clickedElement.classList.contains('menu-category')) {
+            clickedElement.classList.add('open');
+        }
+    }
+    
+    // 3. Filter the products
+    if (type === 'All') {
+        currentProducts = [...allProducts];
+        toggleSortBar(false);
+    } else if (subType) {
+        currentProducts = allProducts.filter(p => p.type === type && p.sub_type === subType);
+        toggleSortBar(true);
+    } else {
+        currentProducts = allProducts.filter(p => p.type === type);
+        toggleSortBar(true);
+    }
+    
+    // 4. Redraw the grid and close the sidebar
+    renderGrid(currentProducts);
+    toggleMenu();
+}
+
+// --- 4. SEARCH & SORT LOGIC ---
+function toggleHomeSearch() {
+    const brand = document.getElementById('home-brand');
+    const icons = document.getElementById('home-header-icons');
+    const searchBox = document.getElementById('home-search-input-box');
+    const searchInput = document.getElementById('home-search-val');
+    
+    if (searchBox.style.display === 'flex') {
+        searchBox.style.display = 'none';
+        brand.style.display = 'flex';
+        icons.style.display = 'flex';
+        if (searchInput) searchInput.value = '';
+        
+        document.querySelectorAll('.sort-item').forEach(btn => btn.classList.remove('active'));
+        const sortBtns = document.querySelectorAll('.sort-item');
+        if (sortBtns.length > 0) sortBtns[0].classList.add('active');
+        priceSortDir = 'none';
+        handleSearch(''); 
+    } else {
+        searchBox.style.display = 'flex';
+        brand.style.display = 'none';
+        icons.style.display = 'none';
+        if (searchInput) searchInput.focus();
+    }
+}
+
+function handleSearch(directQuery = null) {
+    const inputEl = document.getElementById('home-search-val');
+    let query = directQuery || (inputEl ? inputEl.value : "");
+    query = query.toLowerCase().trim();
+    
+    if(!query) {
+        currentProducts = [...allProducts];
+        toggleSortBar(false);
+        renderGrid(currentProducts);
+        return;
+    }
+
+    toggleSortBar(true);
+    const queryTerms = query.split(' ').filter(t => t); 
+    currentProducts = allProducts.filter(p => {
+        const searchableString = `${p.name} ${(p.tags).join(' ')} ${(p.keywords).join(' ')} ${p.type} ${p.sub_type}`.toLowerCase();
+        return queryTerms.every(term => isCloseMatch(term, searchableString));
+    });
+    renderGrid(currentProducts);
+}
+
+function handleSort(sortType, clickedElement) {
+    document.querySelectorAll('.sort-item').forEach(btn => btn.classList.remove('active'));
+    clickedElement.classList.add('active');
+    const priceIcon = document.getElementById('price-icon');
+    priceIcon.className = 'ri-expand-up-down-line';
+    
+    if (sortType === 'best_match') { 
+        priceSortDir = 'none';
+        const inputEl = document.getElementById('home-search-val');
+        let query = inputEl ? inputEl.value.trim().toLowerCase() : "";
+        if (query) {
+            const queryTerms = query.split(' ').filter(t => t); 
+            currentProducts = allProducts.filter(p => {
+                const searchableString = `${p.name} ${(p.tags).join(' ')} ${(p.keywords).join(' ')} ${p.type} ${p.sub_type}`.toLowerCase();
+                return queryTerms.every(term => isCloseMatch(term, searchableString));
+            });
+        } else {
+            currentProducts = [...allProducts];
+        }
+    }
+    else if (sortType === 'sales') { currentProducts.sort((a, b) => (b.sold || 0) - (a.sold || 0)); priceSortDir = 'none'; }
+    else if (sortType === 'price') {
+        if (priceSortDir === 'asc') { currentProducts.sort((a, b) => b.price - a.price); priceSortDir = 'desc'; priceIcon.className = 'ri-arrow-down-line'; } 
+        else { currentProducts.sort((a, b) => a.price - b.price); priceSortDir = 'asc'; priceIcon.className = 'ri-arrow-up-line'; }
+    }
+    renderGrid(currentProducts);
+}
+
+// --- 5. GRID DRAWING & INFINITE SCROLLING ---
+// --- 5. GRID DRAWING & SMART IMAGE LOADING ---
+function renderGrid(productsToDraw, append = false) {
+    const grid = document.getElementById('grid');
+    
+    if (!append) {
+        gridProducts = productsToDraw;
+        renderedCount = 0;
+        if (gridProducts.length === 0) {
+            grid.innerHTML = `<p style="text-align:center; width: 100%; padding: 20px;">No products found.</p>`;
+            return;
+        }
+        grid.innerHTML = `<div class="masonry-col" id="col-left"></div><div class="masonry-col" id="col-right"></div>`;
+    }
+    
+    const leftCol = document.getElementById('col-left');
+    const rightCol = document.getElementById('col-right');
+    if (!leftCol || !rightCol) return;
+    
+    const nextBatch = gridProducts.slice(renderedCount, renderedCount + ITEMS_PER_LOAD);
+    
+    nextBatch.forEach((p, index) => {
+        const globalIndex = renderedCount + index;
+        
+        // SMART LAZY LOADING: First 4 images load instantly, the rest wait.
+        const lazyAttr = globalIndex < 4 ? 'loading="eager"' : 'loading="lazy"';
+        
+        // When the image finishes downloading, we remove the CSS pulse animation
+        const cardHtml = `
+            <a href="product.html?id=${p.id}" class="product-card">
+                <img src="${p.images[0]}" alt="${p.name}" ${lazyAttr} onload="this.style.animation='none';">
+                <div class="p-details">
+                    <div class="p-title">${p.name}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div>
+                            <span class="p-price">৳ ${p.price}</span>
+                            ${p.original_price ? `<span class="p-old-price">৳ ${p.original_price}</span>` : ''}
+                        </div>
+                        ${p.show_sold && p.sold > 0 ? `<div style="font-size:10px; color:#888;">${p.sold} sold</div>` : ''}
+                    </div>
+                </div>
+            </a>`;
+        
+        if (globalIndex % 2 === 0) leftCol.insertAdjacentHTML('beforeend', cardHtml);
+        else rightCol.insertAdjacentHTML('beforeend', cardHtml);
+    });
+    
+    renderedCount += nextBatch.length;
+}
+
+
+
+// 5A. Infinite Scroll Listener
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        if (renderedCount < gridProducts.length) renderGrid(gridProducts, true); 
+    }
+});
+
+// --- 6. SAVE STATE BEFORE LEAVING PAGE ---
+// This is the magic that remembers your scroll position when you click a product!
+window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('homeScrollPos', window.scrollY);
+    sessionStorage.setItem('homeRenderCount', renderedCount);
+    const searchInput = document.getElementById('home-search-val');
+    if (searchInput && searchInput.value) {
+        sessionStorage.setItem('homeSearchTerm', searchInput.value);
+    }
+});
+
+// --- 6. EVENT LISTENERS (FINAL FIXED HOME BUTTON) ---
+function setupEventListeners() {
+    const homeSearch = document.getElementById('home-search-val');
+    if(homeSearch) homeSearch.addEventListener('keyup', (e) => { if (e.key === 'Enter') handleSearch(); });
+    
+    const btns = document.querySelectorAll('.sort-item');
+    if(btns.length >= 3) {
+        btns[0].addEventListener('click', function() { handleSort('best_match', this); });
+        btns[1].addEventListener('click', function() { handleSort('sales', this); });
+        btns[2].addEventListener('click', function() { handleSort('price', this); });
+    }
+
+    // FIX: Make the Home button scroll to top instead of reloading and triggering the save-state
+    const homeNavBtn = document.querySelector('.bottom-nav a[href="index.html"]');
+    if (homeNavBtn) {
+        homeNavBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Stop the page from reloading
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Smoothly glide to the top
+            
+            // Optional: If they were searching, clear the search and reset the grid
+            if (homeSearch && homeSearch.value) {
+                toggleHomeSearch(); // Closes search box and resets grid
+            }
+        });
+    }
+}
+
+initShop();
+</script>
+<script>
+    // Sidebar toggle logic needed on Home page
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.querySelector('.sidebar-overlay').classList.toggle('active');
+    }
+</script>
+
+</body>
+</html>
