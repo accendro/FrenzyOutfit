@@ -106,5 +106,23 @@
     "sizes": "M, L, XL, XXL",
     "delivery_days": "",
     "keywords": ""
+  },
+  {
+    "id": "Banner_200426_1441_XLV",
+    "in_stock": true,
+    "name": "Main banner",
+    "price": "",
+    "original_price": "",
+    "sold": "",
+    "show_sold": false,
+    "type": "Banner",
+    "sub_type": "Drop Shoulder T-shirt",
+    "tags": "",
+    "images": "https://i.ibb.co/v6GxQFSc/bd5f9974b7b2.webp",
+    "description": "",
+    "colors": "",
+    "sizes": "",
+    "delivery_days": "",
+    "keywords": ""
   }
 ]
