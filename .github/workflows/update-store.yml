@@ -3,7 +3,7 @@ name: Update Store Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */8 * * *'
+    - cron: '0 19 * * *'
 
 permissions:
   contents: write 
