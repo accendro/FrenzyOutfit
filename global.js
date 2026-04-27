@@ -4,6 +4,13 @@ const DATA_URL = './products.json';
 
 const facebookPageUsername = "FrenzyOutfitBD";
 
+const LOC_INSIDE = "Inside Dhaka"; 
+
+const FEE_INSIDE = 100;
+
+const LOC_OUTSIDE = "Outside Dhaka";
+const FEE_OUTSIDE = 150;
+
 async function getProducts() {
     try {
 
