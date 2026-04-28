@@ -69,15 +69,15 @@ src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        const phone = localStorage.getItem('order_phone') || "your phone number";
+        const phone = localStorage.getItem(STORE_ID + 'order_phone') || "your phone number";
         const phoneElement = document.getElementById('display-phone');
         if (phoneElement) phoneElement.innerText = phone;
 
-        const orderId = localStorage.getItem('last_order_id') || "Unknown";
+        const orderId = localStorage.getItem(STORE_ID + 'last_order_id') || "Unknown";
         const orderIdElement = document.getElementById('display-order-id');
         if (orderIdElement) orderIdElement.innerText = orderId;
 
-        const lastOrderData = localStorage.getItem('last_order');
+        const lastOrderData = localStorage.getItem(STORE_ID + 'last_order');
         const summaryContainer = document.getElementById('summary-items');
 
         if (lastOrderData && summaryContainer) {
@@ -100,16 +100,16 @@ src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"
                 <div style="flex-grow:1;">
                     <div style="font-size:12px; font-weight:bold; color:#333;">${p.name}</div>
                     <div style="font-size:11px; color:#777;">${colorName}, Size: ${v.size}</div>
-                    <div style="font-size:11px; color:var(--primary); font-weight:bold; margin-top:3px;">৳ ${p.price} x ${v.qty}</div>
+                    <div style="font-size:11px; color:var(--primary); font-weight:bold; margin-top:3px;">BDT ${p.price} x ${v.qty}</div>
                 </div>
-                <div style="font-size:13px; font-weight:bold; color:#222;">৳ ${itemTotal}</div>
+                <div style="font-size:13px; font-weight:bold; color:#222;">BDT ${itemTotal}</div>
             </div>`;
             });
 
             html += `
             <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:14px; font-weight:bold;">
                 <span>Total (excl. delivery):</span>
-                <span style="color:var(--primary);">৳ ${total}</span>
+                <span style="color:var(--primary);">BDT ${total}</span>
             </div>
         `;
             summaryContainer.innerHTML = html;
@@ -119,7 +119,7 @@ src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"
     });
 
     function copyOrderId() {
-        const orderId = localStorage.getItem('last_order_id');
+        const orderId = localStorage.getItem(STORE_ID + 'last_order_id');
         if (!orderId) return;
 
         let textArea = document.createElement("textarea");

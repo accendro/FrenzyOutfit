@@ -228,10 +228,10 @@
     let currentFilter = 'All';
     let selectedOrderIndex = null;
     let saveTimeout = null;
-    let adminPassword = localStorage.getItem('admin_pw') || '';
+    let adminPassword = localStorage.getItem(STORE_ID + 'admin_pw') || '';
 
-    let currentGroupBy = localStorage.getItem('admin_group') || 'Daily';
-    let currentSortBy = localStorage.getItem('admin_sort') || 'Time';
+    let currentGroupBy = localStorage.getItem(STORE_ID + 'admin_group') || 'Daily';
+    let currentSortBy = localStorage.getItem(STORE_ID + 'admin_sort') || 'Time';
 
     window.addEventListener('DOMContentLoaded', () => {
     const grp = document.getElementById('group-select');
@@ -240,7 +240,7 @@
     if (srt) srt.value = currentSortBy;
 
     if (adminPassword) {
-        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cachedData = localStorage.getItem(STORE_ID + CACHE_KEY);
         if (cachedData) {
             try {
                 allOrders = JSON.parse(cachedData);
@@ -256,8 +256,8 @@
     }
 });
 
-    function changeGroup(val) { currentGroupBy = val; localStorage.setItem('admin_group', val); renderOrders(); }
-    function changeSort(val) { currentSortBy = val; localStorage.setItem('admin_sort', val); renderOrders(); }
+    function changeGroup(val) { currentGroupBy = val; localStorage.setItem(STORE_ID + 'admin_group', val); renderOrders(); }
+    function changeSort(val) { currentSortBy = val; localStorage.setItem(STORE_ID + 'admin_sort', val); renderOrders(); }
 
     function togglePw() {
         const input = document.getElementById('pw-input');
@@ -315,7 +315,7 @@
     if (!adminPassword) return;
 
     const now = Date.now();
-    const lastFetch = localStorage.getItem(TIME_KEY) || 0;
+    const lastFetch = localStorage.getItem(STORE_ID + TIME_KEY) || 0;
     const container = document.getElementById('order-container');
     const loginError = document.getElementById('login-error');
 
@@ -333,7 +333,7 @@
         }
 
         if (isManualLogin) {
-            localStorage.setItem('admin_pw', adminPassword);
+            localStorage.setItem(STORE_ID + 'admin_pw', adminPassword);
             document.getElementById('login-screen').classList.add('hidden');
         }
 
@@ -342,8 +342,8 @@
 
             allOrders.forEach(o => { if (o.Status === 'Intake') o.Status = 'New'; });
 
-            localStorage.setItem(CACHE_KEY, JSON.stringify(allOrders));
-            localStorage.setItem(TIME_KEY, Date.now());
+            localStorage.setItem(STORE_ID + CACHE_KEY, JSON.stringify(allOrders));
+            localStorage.setItem(STORE_ID + TIME_KEY, Date.now());
             renderOrders();
         }
 
@@ -351,7 +351,7 @@
         if (err.message === "unauth") {
 
             adminPassword = '';
-            localStorage.removeItem('admin_pw');
+            localStorage.removeItem(STORE_ID + 'admin_pw');
 
             if (isManualLogin) {
                 loginError.innerText = "Invalid password. Access denied.";
@@ -384,7 +384,7 @@
         if (order) {
             order.Status = document.getElementById('modal-status-select').value;
             order.Admin_Note = document.getElementById('modal-admin-note').value;
-            localStorage.setItem(CACHE_KEY, JSON.stringify(allOrders));
+            localStorage.setItem(STORE_ID + CACHE_KEY, JSON.stringify(allOrders));
             renderOrders();
         }
 
