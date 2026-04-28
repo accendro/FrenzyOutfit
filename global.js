@@ -11,6 +11,13 @@ const FEE_INSIDE = 100;
 const LOC_OUTSIDE = "Outside Dhaka";
 const FEE_OUTSIDE = 150;
 
+const LINK_FACEBOOK = "https://www.facebook.com/FrenzyOutfitBD/";
+const LINK_YOUTUBE = "https://youtube.com/@frenzy_outfit?si=VY--_UGZFaagTCGb";
+const LINK_TIKTOK = "https://vm.tiktok.com/ZS9LT4vGeVd42-5qyhs/";
+const LINK_PHONE = "01816161221";
+const LINK_EMAIL = "frenzyoutfit2427@gmail.com";
+const LINK_MAPS = "https://maps.app.goo.gl/y5BM77qVfFkp5GqV6?g_st=aw";
+
 async function getProducts() {
     try {
 
