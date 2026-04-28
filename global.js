@@ -1,6 +1,7 @@
+const STORE_ID = "Frenzy_";
 const DATA_URL = './products.json';
 
-        const API_URL = "https://script.google.com/macros/s/AKfycbyjNqmuPwJawaLPP4fm6JImQcngpg30FfSE6_SNUgeG6nchRMMG4u5fVjprCBX069mbxg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyjNqmuPwJawaLPP4fm6JImQcngpg30FfSE6_SNUgeG6nchRMMG4u5fVjprCBX069mbxg/exec";
 
 const facebookPageUsername = "FrenzyOutfitBD";
 
