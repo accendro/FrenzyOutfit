@@ -1,7 +1,6 @@
 const STORE_ID = "Frenzy_";
-const DATA_URL = './products.json';
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyjNqmuPwJawaLPP4fm6JImQcngpg30FfSE6_SNUgeG6nchRMMG4u5fVjprCBX069mbxg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyjNqmuPwJawaLPP4fm6JImQcngpg30FfSE6_SNUgeG6nchRMMG4u5fVjprCBX069mbxg/exec";
 
 const facebookPageUsername = "FrenzyOutfitBD";
 
@@ -18,6 +17,8 @@ const LINK_TIKTOK = "https://vm.tiktok.com/ZS9LT4vGeVd42-5qyhs/";
 const LINK_PHONE = "01816161221";
 const LINK_EMAIL = "frenzyoutfit2427@gmail.com";
 const LINK_MAPS = "https://maps.app.goo.gl/y5BM77qVfFkp5GqV6?g_st=aw";
+
+const DATA_URL = './products.json';
 
 async function getProducts() {
     try {
@@ -112,7 +113,7 @@ function isCloseMatch(typedWord, databaseString) {
 }
 
 function getUrlParam(param) { return new URLSearchParams(window.location.search).get(param); }
-function getCart() { const c = localStorage.getItem('my_cart'); return c ? JSON.parse(c) :[]; }
+function getCart() { const c = localStorage.getItem(STORE_ID + 'my_cart'); return c ? JSON.parse(c) :[]; }
 
 function addToCart(product, variant) {
     let cart = getCart();
@@ -120,7 +121,7 @@ function addToCart(product, variant) {
     if (exist) exist.variant.qty += variant.qty;
     else cart.push({ product, variant });
 
-    localStorage.setItem('my_cart', JSON.stringify(cart));
+    localStorage.setItem(STORE_ID + 'my_cart', JSON.stringify(cart));
     updateCartIcon();
 }
 
@@ -181,7 +182,7 @@ function openMessenger() {
     let refParam = 'website_home';
 
     if (currentUrl.includes('thankyou.html')) {
-        const orderId = localStorage.getItem('last_order_id');
+        const orderId = localStorage.getItem(STORE_ID + 'last_order_id');
         if (orderId) {
             message = `#WebOrder\n\nহ্যালো! আমি এইমাত্র একটি অর্ডার করেছি।\nআমার অর্ডার আইডি: ${orderId}\n\nআমি আমার অর্ডার সম্পর্কে কিছু জানতে চাচ্ছি।`;
             refParam = `order_${orderId}`;
@@ -189,7 +190,7 @@ function openMessenger() {
     }
 
     else if (currentUrl.includes('checkout.html')) {
-        const cartText = localStorage.getItem('my_cart');
+        const cartText = localStorage.getItem(STORE_ID + 'my_cart');
         if (cartText) {
             const cart = JSON.parse(cartText);
             if (cart.length > 0) {

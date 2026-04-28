@@ -228,7 +228,7 @@
                 cart[index].variant.qty = 1;
             }
 
-            localStorage.setItem('my_cart', JSON.stringify(cart));
+            localStorage.setItem(STORE_ID + 'my_cart', JSON.stringify(cart));
             loadCheckout();
             updateCartIcon();
         }
@@ -249,7 +249,7 @@
             if (itemToRemove !== null) {
                 let cart = getCart();
                 cart.splice(itemToRemove, 1);
-                localStorage.setItem('my_cart', JSON.stringify(cart));
+                localStorage.setItem(STORE_ID + 'my_cart', JSON.stringify(cart));
                 loadCheckout();
                 updateCartIcon();
             }
@@ -297,11 +297,11 @@ if (deliveryDropdown) {
                 const el = document.getElementById(inputData.id);
                 if (el) {
 
-                    const savedValue = localStorage.getItem(inputData.key);
+                    const savedValue = localStorage.getItem(STORE_ID + inputData.key);
                     if (savedValue) el.value = savedValue;
 
                     el.addEventListener('input', () => {
-                        localStorage.setItem(inputData.key, el.value);
+                        localStorage.setItem(STORE_ID + inputData.key, el.value);
                     });
                 }
             });
@@ -310,7 +310,7 @@ if (deliveryDropdown) {
         setupFormPersistence();
 
         function canPlaceOrder() {
-            let orderHistory = JSON.parse(localStorage.getItem('order_history') || '[]');
+            let orderHistory = JSON.parse(localStorage.getItem(STORE_ID + 'order_history') || '[]');
             const now = new Date().getTime();
             orderHistory = orderHistory.filter(time => now - time < 10800000); 
 
@@ -319,9 +319,9 @@ if (deliveryDropdown) {
         }
 
         function recordSuccessfulOrder() {
-            let orderHistory = JSON.parse(localStorage.getItem('order_history') || '[]');
+            let orderHistory = JSON.parse(localStorage.getItem(STORE_ID + 'order_history') || '[]');
             orderHistory.push(new Date().getTime());
-            localStorage.setItem('order_history', JSON.stringify(orderHistory));
+            localStorage.setItem(STORE_ID + 'order_history', JSON.stringify(orderHistory));
         }
 
         const placeOrderBtn = document.querySelector('.place-order-btn');
@@ -455,9 +455,9 @@ if (deliveryDropdown) {
                     placeOrderBtn.style.color = "white";
 
                     if (typeof recordSuccessfulOrder === 'function') recordSuccessfulOrder();
-                    localStorage.setItem('order_phone', phone);
-                    localStorage.setItem('last_order', JSON.stringify(cart));
-                    localStorage.setItem('last_order_id', uniqueId);
+                    localStorage.setItem(STORE_ID + 'order_phone', phone);
+                    localStorage.setItem(STORE_ID + 'last_order', JSON.stringify(cart));
+                    localStorage.setItem(STORE_ID + 'last_order_id', uniqueId);
 
                     if (typeof fbq === 'function') {
                         const productIds = cart.map(item => item.product.id);
@@ -470,11 +470,11 @@ if (deliveryDropdown) {
                         });
                     }
 
-                    localStorage.removeItem('saved_name');
-                    localStorage.removeItem('saved_phone');
-                    localStorage.removeItem('saved_address');
-                    localStorage.removeItem('saved_note');
-                    localStorage.removeItem('my_cart');
+                    localStorage.removeItem(STORE_ID + 'saved_name');
+                    localStorage.removeItem(STORE_ID + 'saved_phone');
+                    localStorage.removeItem(STORE_ID + 'saved_address');
+                    localStorage.removeItem(STORE_ID + 'saved_note');
+                    localStorage.removeItem(STORE_ID + 'my_cart');
 
                     setTimeout(() => {
                         window.location.href = 'thankyou.html';
