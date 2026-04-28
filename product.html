@@ -200,7 +200,6 @@ async function loadDetails() {
     <i class="ri-hand-coin-line" style="color:#4cd137; font-size:18px; margin-top:-2px;"></i>
     <span style="font-size:13px; color:#444;"><b>Cash on Delivery Available</b></span>
 </div>
-
         <div style="display: flex; flex-direction: column; gap: 12px; padding: 5px 0;">
             <div style="display:flex; align-items:flex-start; gap:10px;">
                 <i class="ri-truck-line" style="color:var(--primary); font-size:18px; margin-top:-2px;"></i>
@@ -360,14 +359,14 @@ function syncPriceWithImage(imgUrl) {
         }
     }
 
-    const oldPriceHtml = currentProduct.original_price ? `<span class="p-old-price">৳ ${currentProduct.original_price}</span>` : '';
-    const priceHtml = `৳ ${currentProduct.price} ${oldPriceHtml}`;
+    const oldPriceHtml = currentProduct.original_price ? `<span class="p-old-price">BDT ${currentProduct.original_price}</span>` : '';
+    const priceHtml = `BDT ${currentProduct.price} ${oldPriceHtml}`;
 
     const priceEl = document.querySelector('.detail-price');
     if (priceEl) priceEl.innerHTML = priceHtml;
 
     const modalPriceEl = document.getElementById('modal-price');
-    if (modalPriceEl) modalPriceEl.innerHTML = `৳ ${currentProduct.price}`;
+    if (modalPriceEl) modalPriceEl.innerHTML = `BDT ${currentProduct.price}`;
 
     const modalThumbEl = document.getElementById('modal-thumb');
     if (modalThumbEl) modalThumbEl.src = imgUrl;
@@ -569,7 +568,7 @@ function renderSimilarProducts(allProds, currProd) {
     similar.forEach((p, index) => {
         const cardHtml = `<a href="product.html?id=${p.id}" class="product-card">
             <img src="${p.images[0]}" alt="${p.name}">
-            <div class="p-details"><div class="p-title">${p.name}</div><div><span class="p-price">৳ ${p.price}</span></div></div>
+            <div class="p-details"><div class="p-title">${p.name}</div><div><span class="p-price">BDT ${p.price}</span></div></div>
         </a>`;
         if (index % 2 === 0) leftColHtml += cardHtml; else rightColHtml += cardHtml;
     });

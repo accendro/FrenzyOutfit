@@ -52,13 +52,13 @@
 
         <div style="background:#f9f9f9; padding:10px; border-radius:4px; margin-bottom:20px;">
             <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;">
-                <span>Subtotal</span> <span id="subtotal-display">৳ 0</span>
+                <span>Subtotal</span> <span id="subtotal-display">BDT 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;">
-                <span>Delivery</span> <span id="delivery-display">৳ 0</span>
+                <span>Delivery</span> <span id="delivery-display">BDT 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; font-weight:bold; margin-top:5px; border-top:1px solid #ddd; padding-top:5px;">
-                <span>Total</span> <span id="total-display" style="color:var(--primary);">৳ 0</span>
+                <span>Total</span> <span id="total-display" style="color:var(--primary);">BDT 0</span>
             </div>
         </div>
 
@@ -194,7 +194,7 @@
 
             <div style="display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
                 <div class="delete-btn-wrap" onclick="openConfirm(${index})"><i class="ri-delete-bin-line"></i></div>
-                <div class="checkout-price" style="margin-top:auto;">৳ ${itemTotal}</div>
+                <div class="checkout-price" style="margin-top:auto;">BDT ${itemTotal}</div>
             </div>
         </div>`;
             });
@@ -258,18 +258,18 @@
 
         function updateTotals(subtotal) {
             if (subtotal === 0) {
-                document.getElementById('subtotal-display').innerText = `৳ 0`;
-                document.getElementById('delivery-display').innerText = `৳ 0`;
-                document.getElementById('total-display').innerText = `৳ 0`;
+                document.getElementById('subtotal-display').innerText = `BDT 0`;
+                document.getElementById('delivery-display').innerText = `BDT 0`;
+                document.getElementById('total-display').innerText = `BDT 0`;
                 return;
             }
 
             const deliverySelect = document.getElementById('delivery-select');
             const deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 0;
 
-            document.getElementById('subtotal-display').innerText = `৳ ${subtotal}`;
-            document.getElementById('delivery-display').innerText = `৳ ${deliveryFee}`;
-            document.getElementById('total-display').innerText = `৳ ${subtotal + deliveryFee}`;
+            document.getElementById('subtotal-display').innerText = `BDT ${subtotal}`;
+            document.getElementById('delivery-display').innerText = `BDT ${deliveryFee}`;
+            document.getElementById('total-display').innerText = `BDT ${subtotal + deliveryFee}`;
         }
 
 const deliveryDropdown = document.getElementById('delivery-select');
