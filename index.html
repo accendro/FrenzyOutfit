@@ -438,8 +438,8 @@ function renderGrid(productsToDraw, append = false) {
                     <div class="p-title">${p.name}</div>
                     <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div>
-                            <span class="p-price">৳ ${p.price}</span>
-                            ${p.original_price ? `<span class="p-old-price">৳ ${p.original_price}</span>` : ''}
+                            <span class="p-price">BDT ${p.price}</span>
+                            ${p.original_price ? `<span class="p-old-price">BDT ${p.original_price}</span>` : ''}
                         </div>
                         ${p.show_sold && p.sold > 0 ? `<div style="font-size:10px; color:#888;">${p.sold} sold</div>` : ''}
                     </div>
