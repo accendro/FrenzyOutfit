@@ -215,37 +215,15 @@ function renderSidebarMenu() {
         html += `</div>`;
     }
 
-    html += `</div>`; 
-
-    let socialHtml = '';
-
-    if (typeof LINK_FACEBOOK !== 'undefined' && LINK_FACEBOOK) {
-        socialHtml += `<a href="${LINK_FACEBOOK}" target="_blank" style="color:#666; text-decoration:none;"><i class="ri-facebook-circle-line" style="font-size:18px; vertical-align:middle;"></i></a>`;
-    }
-    if (typeof LINK_YOUTUBE !== 'undefined' && LINK_YOUTUBE) {
-        socialHtml += `<a href="${LINK_YOUTUBE}" target="_blank" style="color:#666; text-decoration:none;"><i class="ri-youtube-line" style="font-size:18px; vertical-align:middle;"></i></a>`;
-    }
-    if (typeof LINK_TIKTOK !== 'undefined' && LINK_TIKTOK) {
-        socialHtml += `<a href="${LINK_TIKTOK}" target="_blank" style="color:#666; text-decoration:none;"><i class="ri-tiktok-line" style="font-size:18px; vertical-align:middle;"></i></a>`;
-    }
-    if (typeof LINK_PHONE !== 'undefined' && LINK_PHONE) {
-        socialHtml += `<a href="tel:${LINK_PHONE}" style="color:#666; text-decoration:none;"><i class="ri-phone-line" style="font-size:18px; vertical-align:middle;"></i></a>`;
-    }
-    if (typeof LINK_EMAIL !== 'undefined' && LINK_EMAIL) {
-        socialHtml += `<a href="mailto:${LINK_EMAIL}" style="color:#666; text-decoration:none;"><i class="ri-mail-line" style="font-size:18px; vertical-align:middle;"></i></a>`;
-    }
-    if (typeof LINK_MAPS !== 'undefined' && LINK_MAPS) {
-        socialHtml += `<a href="${LINK_MAPS}" target="_blank" style="color:#666; text-decoration:none;"><i class="ri-map-pin-line" style="font-size:18px; vertical-align:middle;"></i></a>`;
-    }
-
-    if (socialHtml !== '') {
-        html += `
-        <div style="margin-top:auto; border-top:1px solid #eee; padding-top:15px; padding-bottom:10px;">
-             <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap; justify-content:flex-start; align-items:center;">
-                 ${socialHtml}
-             </div>
+    html += `</div>
+        <div style="margin-top:auto; border-top:1px solid #eee; padding-top:15px; padding-bottom:10px; display:flex; flex-direction:row; gap:5px;">
+             <a href="https://www.facebook.com/FrenzyOutfitBD/" target="_blank" style="color:#666; font-size:15px; font-weight:500; text-decoration:none;"><i class="ri-facebook-circle-line" style="margin-right:8px; font-size:18px; vertical-align:middle;"></i></a>
+             <a href="https://youtube.com/@frenzy_outfit?si=VY--_UGZFaagTCGb" target="_blank" style="color:#666; font-size:15px; font-weight:500; text-decoration:none;"><i class="ri-youtube-line" style="margin-right:8px; font-size:18px; vertical-align:middle;"></i></a>
+             <a href="https://vm.tiktok.com/ZS9LT4vGeVd42-5qyhs/" target="_blank" style="color:#666; font-size:15px; font-weight:500; text-decoration:none;"><i class="ri-tiktok-line" style="margin-right:8px; font-size:18px; vertical-align:middle;"></i></a>
+             <a href="tel:01816161221" style="color:#666; font-size:15px; font-weight:500; text-decoration:none;"><i class="ri-phone-line" style="margin-right:8px; font-size:18px; vertical-align:middle;"></i></a>
+             <a href="mailto:frenzyoutfit2427@gmail.com" style="color:#666; font-size:15px; font-weight:500; text-decoration:none;"><i class="ri-mail-line" style="margin-right:8px; font-size:18px; vertical-align:middle;"></i></a>
+             <a href="https://maps.app.goo.gl/y5BM77qVfFkp5GqV6?g_st=aw" target="_blank" style="color:#666; font-size:15px; font-weight:500; text-decoration:none;"><i class="ri-map-pin-line" style="margin-right:8px; font-size:18px; vertical-align:middle;"></i></a>
         </div>`;
-    }
 
     sidebar.innerHTML = html;
 }
