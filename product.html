@@ -6,23 +6,6 @@
     <title>Product Details</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1503656738058759');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"
-/></noscript>
-
 </head>
 <body>
 
@@ -200,6 +183,7 @@ async function loadDetails() {
     <i class="ri-hand-coin-line" style="color:#4cd137; font-size:18px; margin-top:-2px;"></i>
     <span style="font-size:13px; color:#444;"><b>Cash on Delivery Available</b></span>
 </div>
+
         <div style="display: flex; flex-direction: column; gap: 12px; padding: 5px 0;">
             <div style="display:flex; align-items:flex-start; gap:10px;">
                 <i class="ri-truck-line" style="color:var(--primary); font-size:18px; margin-top:-2px;"></i>
@@ -245,8 +229,6 @@ async function loadDetails() {
             color: hasColors ? null : { name: 'Default', img: currentProduct.images[0] },
             size: hasSizes ? null : 'Default'
         }));
-
-        modalHtml += `<p style="font-size:12px; color:var(--primary); font-weight:bold; margin-bottom:15px; background:#fff0e8; padding:8px; border-radius:4px;">✨ You are building a ${comboCount}-Piece Combo. Select variants for each item below:</p>`;
 
         for (let i = 0; i < comboCount; i++) {
             modalHtml += `<div style="background:#ffffff; padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid #ccc; border-left: 4px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">`;

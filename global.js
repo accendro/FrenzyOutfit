@@ -2,6 +2,8 @@ const STORE_ID = "Frenzy_";
 
         const API_URL = "https://script.google.com/macros/s/AKfycbyjNqmuPwJawaLPP4fm6JImQcngpg30FfSE6_SNUgeG6nchRMMG4u5fVjprCBX069mbxg/exec";
 
+const META_PIXEL_ID = "1503656738058759";
+
 const facebookPageUsername = "FrenzyOutfitBD";
 
 const LOC_INSIDE = "Inside Dhaka"; 
@@ -77,6 +79,22 @@ async function getProducts() {
         console.error("Error fetching products:", error); 
         return []; 
     }
+}
+
+if (typeof META_PIXEL_ID !== 'undefined' && META_PIXEL_ID !== "") {
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', META_PIXEL_ID);
+    fbq('track', 'PageView');
+} else {
+    console.warn("Meta Pixel ID is empty. Tracking disabled.");
 }
 
 function getTypoDistance(a, b) {
@@ -242,3 +260,4 @@ function openMessenger() {
 }
 
 document.addEventListener('DOMContentLoaded', updateCartIcon);
+
