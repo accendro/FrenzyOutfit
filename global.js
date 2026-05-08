@@ -13,6 +13,11 @@ const FEE_INSIDE = 100;
 const LOC_OUTSIDE = "Outside Dhaka";
 const FEE_OUTSIDE = 150;
 
+const BKASH_NUMBER = "01897292427";
+const DISCOUNT_PARTIAL = "20";
+const DISCOUNT_FULL = "30";
+
+
 const LINK_FACEBOOK = "https://www.facebook.com/FrenzyOutfitBD/";
 const LINK_YOUTUBE = "https://youtube.com/@frenzy_outfit?si=VY--_UGZFaagTCGb";
 const LINK_TIKTOK = "https://vm.tiktok.com/ZS9LT4vGeVd42-5qyhs/";
@@ -81,21 +86,7 @@ async function getProducts() {
     }
 }
 
-if (typeof META_PIXEL_ID !== 'undefined' && META_PIXEL_ID !== "") {
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
 
-    fbq('init', META_PIXEL_ID);
-    fbq('track', 'PageView');
-} else {
-    console.warn("Meta Pixel ID is empty. Tracking disabled.");
-}
 
 function getTypoDistance(a, b) {
     if (a.length === 0) return b.length; 
