@@ -1,7 +1,11 @@
-name: Update Store Data
+name: Update Store Data & Inject Pixel
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '**/*.html'
+      - 'global.js'
   schedule:
     - cron: '0 19 * * *'
 
@@ -21,13 +25,21 @@ jobs:
         with:
           node-version: '20'
           
-      - name: 🚀 Run Fetch Script
+      - name: 🚀 Run Fetch Script (Google Sheets)
+        # This runs EVERY time (Midnight Schedule, File Upload, and Manual)
         run: node fetch-data.js
+
+      - name: 🛠️ Hardcode Meta Pixel into HTML
+        # NEW: This prevents the Pixel Injector from running on the 1:00 AM schedule!
+        if: github.event_name != 'schedule'
+        run: node inject-pixel.js
         
       - name: 💾 Commit and Push changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add products.json
-          git commit -m "🤖 Auto-updated products database" || echo "No changes to commit"
+          
+          git add products.json *.html
+          
+          git commit -m "🤖 Auto-updated Store & Pixel" || echo "No changes to commit"
           git push
