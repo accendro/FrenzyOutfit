@@ -7,23 +7,7 @@
     <title>Checkout</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-    <!-- AUTO-INJECTED META PIXEL -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1503656738058759');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"/></noscript>
-    <!-- END AUTO-INJECTED META PIXEL -->
-    </head>
+</head>
 <body style="background: white;">
     <div class="top-header checkout-header">
         <div style="display:flex; align-items:center;">
@@ -445,10 +429,10 @@ if (hasBkash && currentPaymentMethod !== 'COD') {
     const trxInput = document.getElementById('bkash-trx');
     trxId = trxInput ? trxInput.value.trim() : "";
     if (!trxId) {
-        showToast("Please enter your bKash Number or TrxID", false);
+        showToast("Please enter your bKash/nogod Number ", false);
         return;
     }
-    paymentInfoStr = `(${currentPaymentMethod})✔️ \n- Bkash Numb/Trx: ${trxId}👈`;
+    paymentInfoStr = `(${currentPaymentMethod})✔️ \n- Bkash/Nogod Number: ${trxId}👈`;
 }
                 if (!document.getElementById('processing-styles')) {
                     const style = document.createElement('style');
