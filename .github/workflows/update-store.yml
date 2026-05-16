@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - '**/*.html'
+      - '!admin.html'       # <--- EXCEPTION 1: Do not wake the robot for admin.html
       - 'global.js'
   schedule:
     - cron: '0 19 * * *'
@@ -30,7 +31,7 @@ jobs:
         run: node fetch-data.js
 
       - name: 🛠️ Hardcode Meta Pixel into HTML
-        # NEW: This prevents the Pixel Injector from running on the 1:00 AM schedule!
+        # This prevents the Pixel Injector from running on the 1:00 AM schedule!
         if: github.event_name != 'schedule'
         run: node inject-pixel.js
         
@@ -39,7 +40,8 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
-          git add products.json *.html
+          # EXCEPTION 2: Explicitly list only public files so admin.html is never added by the bot
+          git add products.json index.html product.html checkout.html thankyou.html
           
           git commit -m "🤖 Auto-updated Store & Pixel" || echo "No changes to commit"
           git push
