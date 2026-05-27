@@ -438,7 +438,21 @@
     }
     function copyText(elementId, labelName) {
         const text = document.getElementById(elementId).innerText;
-        navigator.clipboard.writeText(text).then(() => { alert(labelName + " copied!"); });
+        navigator.clipboard.writeText(text).then(() => { 
+            let existingToast = document.getElementById('copy-toast');
+            if (existingToast) existingToast.remove();
+            const toast = document.createElement('div');
+            toast.id = 'copy-toast';
+            toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-5 py-2.5 rounded-full text-xs font-bold shadow-2xl z-[9999] flex items-center gap-2 transition-all duration-300 ease-out opacity-100 translate-y-0';
+            toast.innerHTML = `<i class="ri-checkbox-circle-fill text-green-400 text-base"></i> ${labelName} Copied!`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300); 
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     }
     function setStatusFilter(status) {
         currentFilter = status;
