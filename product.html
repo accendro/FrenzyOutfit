@@ -1,4 +1,3 @@
-<!-- removed -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,25 +6,7 @@
     <title>Product Details</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-    
-    
-    <!-- AUTO-INJECTED META PIXEL -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1503656738058759');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"/></noscript>
-    <!-- END AUTO-INJECTED META PIXEL -->
-    </head>
+</head>
 <body>
 <div class="top-header">
     <a href="index.html"><i class="ri-arrow-left-line menu-btn"></i></a>
@@ -48,20 +29,51 @@
     <img id="main-img" src="" class="detail-image" alt="Loading...">
 </div>
 <div class="gallery-strip"></div>
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="detail-info">
+    <h1 class="detail-title" id="detail-title">Loading...</h1>
+    <div class="detail-subtitle" id="detail-subtitle">Loading...</div>
     <div class="detail-price">Loading...</div>
-    <h1 class="detail-title">Loading...</h1>
-<div class="product-tags" id="tags-container"></div>
 </div>
-<div class="info-text" id="delivery-info">Loading...</div>
-<div class="info-text" id="color-preview-info" style="display:none; border-top:1px solid #eee;">
-    <div style="font-weight:bold; margin-bottom:10px; font-size:13px; color:#555;">Available Colors:</div>
+
+<!-- Delivery Info Box -->
+<div class="details-box" id="delivery-info">Loading...</div>
+
+<!-- Color Preview Box -->
+<div class="details-box" id="color-preview-info" style="display:none;">
+    <div style="font-weight:700; margin-bottom:10px; font-size:14px; color:var(--dark);">Available Colors:</div>
     <div id="color-preview-list" style="display:flex; flex-wrap:wrap; gap:10px; padding-bottom:5px;"></div>
 </div>
+
 <div class="section-title">Product Details</div>
-<div class="info-text" id="description-info">Loading...</div>
-<div class="section-title" style="margin-top:20px;">You May Also Like</div>
+<!-- Description Box -->
+<div class="details-box info-text" id="description-info">Loading...</div>
+
+<div class="section-title" style="margin-top:20px;">Similar Products</div>
 <div class="product-grid" id="similar-grid" style="margin-bottom: 20px;"></div>
+
+
+
+
+
+
+
+
+
+
+
+
     <div class="bottom-nav product-bottom-nav">
         <a href="index.html" class="icon-btn"><i class="ri-home-5-line"></i> Home</a>
 <div class="icon-btn" onclick="openMessenger()" style="cursor:pointer;">
@@ -100,26 +112,33 @@ let touchendX = 0;
 let comboCount = 0;
 let isCombo = false;
 let comboSelections =[]; 
+
+// --- 1. FULL INITIALIZATION FUNCTION (WITH SMART AUTO-SELECTION) ---
 async function loadDetails() {
-    let products =[];
+    let products = [];
     const MAX_RETRIES = 3;       
     const RETRY_DELAY_MS = 400;  
+
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         products = await getProducts();
         if (products.length > 0) break; 
         if (attempt < MAX_RETRIES) await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
     }
+
     currentProduct = products.find(p => String(p.id) === String(getUrlParam('id')));
+
     if (!currentProduct) {
         document.body.innerHTML = "<h2 style='text-align:center; padding: 50px;'>Product Not Found</h2>";
         return;
     }
+
     basePrice = currentProduct.price;
     selectedVariant = { color: null, size: null, qty: 1 };
     currentImageIndex = 0;
+
     comboCount = 0;
     isCombo = false;
-    comboSelections =[];
+    comboSelections = [];
     if (currentProduct.tags && currentProduct.tags.length > 0) {
         const cTag = currentProduct.tags.find(t => t.toLowerCase().startsWith('combo-'));
         if (cTag) {
@@ -127,6 +146,7 @@ async function loadDetails() {
             isCombo = comboCount > 1;
         }
     }
+
     const mainImg = document.getElementById('main-img');
     const mainImgBg = document.getElementById('main-img-bg');
     if (mainImg && mainImgBg) {
@@ -137,6 +157,7 @@ async function loadDetails() {
             document.getElementById('fs-modal').classList.add('active');
         };
     }
+    
     if (!currentProduct.in_stock) {
         const imgContainer = document.querySelector('.product-image-container');
         if (imgContainer) imgContainer.insertAdjacentHTML('beforeend', `<div class="out-of-stock-badge">Out of Stock</div>`);
@@ -145,11 +166,18 @@ async function loadDetails() {
         if (buyBtn) { buyBtn.innerText = "Sold Out"; buyBtn.classList.add('btn-disabled'); buyBtn.onclick = null; }
         if (cartBtn) { cartBtn.innerText = "Unavailable"; cartBtn.classList.add('btn-disabled'); cartBtn.onclick = null; }
     }
-    document.querySelector('.detail-title').innerText = currentProduct.name;
-    const oldPriceHtml = currentProduct.original_price ? `<span class="p-old-price">BDT ${currentProduct.original_price}</span>` : '';
-    document.querySelector('.detail-price').innerHTML = `BDT ${currentProduct.price} ${oldPriceHtml}`;
+    
+    const titleEl = document.getElementById('detail-title');
+    if (titleEl) titleEl.innerText = currentProduct.name;
+    
+    let subTitle = currentProduct.type || "Fashion";
+    if (currentProduct.sub_type) subTitle += ` - ${currentProduct.sub_type}`;
+    const subtitleEl = document.getElementById('detail-subtitle');
+    if (subtitleEl) subtitleEl.innerText = subTitle;
+    
     const modalTitleEl = document.getElementById('modal-title');
     if (modalTitleEl) modalTitleEl.innerText = currentProduct.name;
+    
     let rawDesc = currentProduct.description ? String(currentProduct.description) : 'No description available.';
     const formattedDesc = rawDesc
         .replace(/\n/g, '<br>')                               
@@ -158,19 +186,22 @@ async function loadDetails() {
         .replace(/__(.*?)__/g, '<u>$1</u>')                   
         .replace(/\^\^(.*?)\^\^/g, '<span style="text-decoration: overline;">$1</span>') 
         .replace(/~~(.*?)~~/g, '<s>$1</s>');                  
+        
     document.getElementById('description-info').innerHTML = formattedDesc;
+    
     document.getElementById('delivery-info').innerHTML = `
         <div style="display:flex; align-items:flex-start; gap:10px;">
-    <i class="ri-hand-coin-line" style="color:#4cd137; font-size:18px; margin-top:-2px;"></i>
-    <span style="font-size:13px; color:#444;"><b>প্রোডাক্ট দেখে তারপর পেমেন্ট (Cash on Delivery)</b></span>
-</div>
+            <i class="ri-hand-coin-line" style="color:var(--dark); font-size:18px; margin-top:-2px;"></i>
+            <span style="font-size:13px; color:#444;"><b>প্রোডাক্ট দেখে তারপর পেমেন্ট (Cash on Delivery)</b></span>
+        </div>
         <div style="display: flex; flex-direction: column; gap: 12px; padding: 5px 0;">
             <div style="display:flex; align-items:flex-start; gap:10px;">
-                <i class="ri-truck-line" style="color:var(--primary); font-size:18px; margin-top:-2px;"></i>
+                <i class="ri-truck-line" style="color:var(--dark); font-size:18px; margin-top:-2px;"></i>
                 <span style="font-size:13px; color:#444;">${calculateDelivery(currentProduct.delivery_days)}</span>
             </div>
+            
             <div style="display:flex; align-items:flex-start; gap:10px;">
-                <i class="ri-map-pin-line" style="color:#ffb03a; font-size:18px; margin-top:-2px;"></i>
+                <i class="ri-map-pin-line" style="color:var(--dark); font-size:18px; margin-top:-2px;"></i>
                 <span style="font-size:13px; color:#555; line-height: 1.5;">
                     Delivery Charge:<br>
                     <b>${LOC_INSIDE}:</b> BDT ${FEE_INSIDE}<br>
@@ -179,24 +210,23 @@ async function loadDetails() {
             </div>
         </div>
     `;
-    const tagsContainer = document.getElementById('tags-container');
-    if (tagsContainer) {
-        if (currentProduct.tags && currentProduct.tags.length > 0) {
-            tagsContainer.innerHTML = currentProduct.tags.map(t => `<span class="tag-pill" onclick="window.location.href='index.html?search=${encodeURIComponent(t)}'">${t}</span>`).join('');
-        } else tagsContainer.innerHTML = '';
-    }
+
     document.querySelector('.gallery-strip').innerHTML = currentProduct.images.map((img, i) => `
         <img src="${img}" class="thumbnail ${i===0?'active':''}" onclick="changeImage(this, ${i})">
     `).join('');
+    
     const imgContainer = document.querySelector('.product-image-container');
     if (imgContainer) {
         imgContainer.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
         imgContainer.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
     }
+
     const variantsContainer = document.getElementById('modal-variants-container');
     let modalHtml = '';
+
     const hasColors = currentProduct.colors && currentProduct.colors.length > 0;
     const hasSizes = currentProduct.sizes && currentProduct.sizes.length > 0;
+
     if (isCombo) {
         comboSelections = Array.from({length: comboCount}, (_, i) => {
             let autoColor = null;
@@ -205,12 +235,15 @@ async function loadDetails() {
             } else {
                 autoColor = { name: 'Default', img: currentProduct.images[0] };
             }
+            
             let autoSize = hasSizes ? (currentProduct.sizes.length === 1 ? currentProduct.sizes[0] : null) : 'Default';
             return { color: autoColor, size: autoSize };
         });
+
         for (let i = 0; i < comboCount; i++) {
             modalHtml += `<div style="background:#ffffff; padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid #ccc; border-left: 4px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05);">`;
             modalHtml += `<p style="font-weight:bold; color:var(--primary); margin-bottom:10px; border-bottom:1px dashed #eee; padding-bottom:5px;">🛍️ Item ${i + 1}</p>`;
+            
             if (hasColors) {
                 modalHtml += `<div class="variant-section"><p class="variant-title">Color</p>`;
                 currentProduct.colors.forEach((c, cIdx) => {
@@ -221,6 +254,7 @@ async function loadDetails() {
                 });
                 modalHtml += `</div>`;
             }
+            
             if (hasSizes) {
                 modalHtml += `<div class="variant-section"><p class="variant-title">Size</p>`;
                 currentProduct.sizes.forEach((s) => {
@@ -245,12 +279,14 @@ async function loadDetails() {
         } else {
             selectedVariant.color = { name: 'Default', img: currentProduct.images[0] };
         }
+        
         if (hasSizes) {
             if (currentProduct.sizes.length === 1) {
                 selectedVariant.size = currentProduct.sizes[0];
             } else {
                 selectedVariant.size = null;
             }
+
             modalHtml += `<div class="variant-section"><p class="variant-title">Size</p>`;
             currentProduct.sizes.forEach((s) => {
                 let isSelected = (currentProduct.sizes.length === 1) ? 'selected' : '';
@@ -261,6 +297,7 @@ async function loadDetails() {
             selectedVariant.size = 'Default';
         }
     }
+
     modalHtml += `
     <div class="variant-section" style="margin-top:15px; padding-top:10px; border-top:1px solid #eee;">
         <p class="variant-title">${isCombo ? "Combo Quantity (Sets)" : "Quantity"}</p>
@@ -270,7 +307,9 @@ async function loadDetails() {
             <button class="qty-btn" onclick="updateQty(1)">+</button>
         </div>
     </div>`;
+
     variantsContainer.innerHTML = modalHtml;
+
     const colorPreviewInfo = document.getElementById('color-preview-info');
     const colorPreviewList = document.getElementById('color-preview-list');
     if (hasColors) {
@@ -285,8 +324,11 @@ async function loadDetails() {
     } else { 
         if(colorPreviewInfo) colorPreviewInfo.style.display = 'none'; 
     }
+
     renderSimilarProducts(products, currentProduct);
+    
     syncPriceWithImage(currentProduct.images[0]);
+
     try {
         if (typeof fbq === 'function') {
             fbq('track', 'ViewContent', {
@@ -301,13 +343,17 @@ async function loadDetails() {
         console.warn("Pixel tracking blocked by browser.");
     }
 }
+
 window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
         window.location.reload();
     }
 });
+
+
 function syncPriceWithImage(imgUrl) {
     if (!currentProduct) return;
+    
     if (currentProduct.colors) {
         const matchedColor = currentProduct.colors.find(c => c.img === imgUrl);
         if (matchedColor && matchedColor.price) {
@@ -316,23 +362,55 @@ function syncPriceWithImage(imgUrl) {
             currentProduct.price = basePrice;
         }
     }
-    const oldPriceHtml = currentProduct.original_price ? `<span class="p-old-price">BDT ${currentProduct.original_price}</span>` : '';
+    
+    let discountHtml = "";
+    let oldPriceHtml = "";
+    let currentPricePrefix = "";
+
+    if (currentProduct.original_price && currentProduct.original_price > currentProduct.price) {
+        const diff = currentProduct.original_price - currentProduct.price;
+        const percentOff = Math.round((diff / currentProduct.original_price) * 100);
+        
+        // Discount text size
+        if (percentOff > 5) {
+            discountHtml = `<span style="color:#FF905A; font-size:13px; font-weight:700;">(${percentOff}% OFF)</span>`;
+        } else {
+            discountHtml = `<span style="color:#FF905A; font-size:13px; font-weight:700;">(BDT ${diff} OFF)</span>`;
+        }
+        
+        // FIX: Original price reduced to 14px to fix optical illusion
+        oldPriceHtml = `<span style="font-size:14px; color:#7E818C; font-weight:400; margin-right:6px;">MRP <span style="text-decoration:line-through;">BDT ${currentProduct.original_price}</span></span>`;
+    } else {
+        // FIX: Prefix reduced to 14px
+        currentPricePrefix = `<span style="font-size:14px; color:#7E818C; font-weight:400; margin-right:4px;">MRP</span>`;
+    }
+    
     const soldHtml = (currentProduct.show_sold && currentProduct.sold > 0) ?
-        `<div style="font-size:12px; color:var(--primary); font-weight:bold; background:#fff0e8; padding:4px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;"><i class="ri-fire-fill"></i> ${currentProduct.sold} Sold</div>` :
-        '';
+        `<div style="font-size:12px; color:var(--primary); font-weight:700; background:#FFF3F5; padding:4px 10px; border-radius:4px; display:inline-flex; align-items:center; gap:4px; border:1px solid var(--primary);"><i class="ri-fire-fill"></i> ${currentProduct.sold} Sold</div>` : '';
+    
     const priceHtml = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>BDT ${currentProduct.price} ${oldPriceHtml}</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div style="display:block; line-height:1;">
+                ${oldPriceHtml}
+                ${currentPricePrefix}<span style="color:var(--dark); font-size:18px; font-weight:700; margin-right:6px;">BDT ${currentProduct.price}</span>
+                ${discountHtml}
+            </div>
             ${soldHtml}
         </div>
     `;
+    
     const priceEl = document.querySelector('.detail-price');
     if (priceEl) priceEl.innerHTML = priceHtml;
+    
     const modalPriceEl = document.getElementById('modal-price');
     if (modalPriceEl) modalPriceEl.innerHTML = `BDT ${currentProduct.price}`;
+    
     const modalThumbEl = document.getElementById('modal-thumb');
     if (modalThumbEl) modalThumbEl.src = imgUrl;
 }
+
+
+
 function openModalWithColor(index) {
     openModal('buy');
     const modalColorOptions = document.querySelectorAll('.variant-section .color-option');
@@ -457,11 +535,13 @@ function closeModal() {
     document.getElementById('buy-modal').classList.remove('active');
     document.getElementById('modal-overlay').classList.remove('active');
 }
+
+
 function renderSimilarProducts(allProds, currProd) {
-    let currTags = currProd.tags ||[];
+    let currTags = currProd.tags || [];
     let scoredProducts = allProds.filter(p => p.id !== currProd.id && p.in_stock === true).map(p => {
         let score = 0;
-        let pTags = p.tags ||[];
+        let pTags = p.tags || [];
         let sameType = (p.type === currProd.type);
         let sameSubType = (p.sub_type && p.sub_type === currProd.sub_type);
         let sharedTagsCount = pTags.filter(t => currTags.includes(t)).length;
@@ -471,10 +551,12 @@ function renderSimilarProducts(allProds, currProd) {
         else if (sharedTagsCount > 0) score += 1;
         return { product: p, score: score };
     });
+    
     let similar = scoredProducts.filter(item => item.score > 0)
                                 .sort((a, b) => b.score - a.score)
                                 .map(item => item.product)
                                 .slice(0, 4);
+                                
     const grid = document.getElementById('similar-grid');
     if (!grid) return;
     if (similar.length === 0) { 
@@ -482,18 +564,50 @@ function renderSimilarProducts(allProds, currProd) {
         if (grid.previousElementSibling) grid.previousElementSibling.style.display = 'none';
         return; 
     }
+    
     grid.style.display = 'flex';
     if (grid.previousElementSibling) grid.previousElementSibling.style.display = 'block';
+    
     let leftColHtml = ''; let rightColHtml = '';
+    
     similar.forEach((p, index) => {
-        const cardHtml = `<a href="product.html?id=${p.id}" class="product-card">
-            <img src="${p.images[0]}" alt="${p.name}">
-            <div class="p-details"><div class="p-title">${p.name}</div><div><span class="p-price">BDT ${p.price}</span></div></div>
-        </a>`;
+        let discountHtml = "";
+        if (p.original_price && p.original_price > p.price) {
+            const diff = p.original_price - p.price;
+            const percentOff = Math.round((diff / p.original_price) * 100);
+            if (percentOff > 5) discountHtml = `<span class="p-discount">(${percentOff}% OFF)</span>`;
+            else discountHtml = `<span class="p-discount">(BDT ${diff} OFF)</span>`;
+        }
+        
+        let subTitle = p.type || "Fashion";
+        if (p.sub_type) subTitle += ` - ${p.sub_type}`;
+
+        // FIX: Ultra-compact string to guarantee zero leading space before BDT
+        const priceRowContent = p.original_price 
+            ? `<span class="p-old-price">BDT ${p.original_price}</span><span class="p-price">BDT ${p.price}</span>${discountHtml}`
+            : `<span class="p-price">BDT ${p.price}</span>${discountHtml}`;
+
+        const cardHtml = `
+            <a href="product.html?id=${p.id}" class="product-card">
+                <div class="image-wrapper">
+                    <img src="${p.images[0]}" alt="${p.name}">
+                    ${p.show_sold && p.sold > 0 ? `<div class="sold-badge"><i class="ri-fire-fill"></i> ${p.sold} Sold</div>` : ''}
+                </div>
+                <div class="p-details">
+                    <div class="p-brand">${p.name}</div>
+                    <div class="p-title">${subTitle}</div>
+                    <div class="price-row">${priceRowContent}</div>
+                </div>
+            </a>`;
+            
         if (index % 2 === 0) leftColHtml += cardHtml; else rightColHtml += cardHtml;
     });
+    
     grid.innerHTML = `<div class="masonry-col">${leftColHtml}</div><div class="masonry-col">${rightColHtml}</div>`;
 }
+
+
+
 function confirmSelection() {
     let finalVariantToCart = selectedVariant;
     if (isCombo) {
