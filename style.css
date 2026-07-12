@@ -189,30 +189,30 @@ button { cursor: pointer; }
 /* Note: We now use .top-header for the product page too */
 /* --- PRODUCT DETAILS PAGE --- */
 /* --- PRODUCT DETAILS PAGE --- */
+/* --- PRODUCT DETAILS PAGE --- */
 .product-image-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 3 / 4; 
-    max-height: 70vh; 
+    max-height: 65vh; /* FIX: Set limit to 65vh like H&M */
     overflow: hidden;
     background: #f5f5f5; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block; /* FIX: Set to block so smaller images collapse the container natively and pull content up */
 }
 
 .bg-blur { display: none; }
 
 .detail-image {
     position: relative;
+    display: block;
     width: 100%;
-    height: 100%;
-    object-fit: cover !important; 
+    height: auto; /* FIX: Respects native aspect ratio */
+    max-height: 65vh; /* FIX: Set limit to 65vh */
+    object-fit: cover !important; /* Crops cleanly only if image exceeds 65vh */
     z-index: 2; 
 }
 
 .gallery-strip { display: flex; gap: 8px; overflow-x: auto; padding: 8px 10px; background: white; border-bottom: 1px solid #eee; }
-.thumbnail { width: 45px; height: 45px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; flex-shrink: 0; }
+.thumbnail { width: 35px; height: 35px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; flex-shrink: 0; }
 .thumbnail.active { border: 2px solid var(--primary); }
 
 
@@ -442,31 +442,7 @@ button { cursor: pointer; }
 .empty-cart-msg i { font-size: 50px; color: #ccc; margin-bottom: 15px; }
 
 
-/* --- NEW UPDATES --- */
 
-/* --- PRODUCT IMAGE: TALLER GALLERY STYLE --- */
-/* --- PRODUCT IMAGE: TALLER GALLERY STYLE --- */
-.product-image-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3 / 4; /* MATCHES HOME PAGE RATIO */
-    max-height: 60vh; /* FIX: Prevents image from taking the entire screen */
-    overflow: hidden;
-    background: #f5f5f5; /* Lighter background for a cleaner fashion feel */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.bg-blur { display: none; /* Disabled for a cleaner Myntra catalog look */ }
-
-.detail-image {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    object-fit: cover !important; /* Changed from contain to cover for full bleed */
-    z-index: 2; 
-}
 
 
 

@@ -6,23 +6,7 @@
     <title>Product Details</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-    <!-- AUTO-INJECTED META PIXEL -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1503656738058759');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"/></noscript>
-    <!-- END AUTO-INJECTED META PIXEL -->
-    </head>
+</head>
 <body>
 <div class="top-header">
     <a href="index.html"><i class="ri-arrow-left-line menu-btn"></i></a>
@@ -383,21 +367,23 @@ function syncPriceWithImage(imgUrl) {
     let oldPriceHtml = "";
     let currentPricePrefix = "";
 
+    // --- SMART DISCOUNT PSYCHOLOGY MATH ---
     if (currentProduct.original_price && currentProduct.original_price > currentProduct.price) {
         const diff = currentProduct.original_price - currentProduct.price;
         const percentOff = Math.round((diff / currentProduct.original_price) * 100);
         
-        // Discount text size
-        if (percentOff > 5) {
+        if (percentOff >= 15) {
+            discountHtml = `<span style="color:#FF905A; font-size:13px; font-weight:700;">(${percentOff}% OFF)</span>`;
+        } else if (diff >= 100) {
+            discountHtml = `<span style="color:#FF905A; font-size:13px; font-weight:700;">(BDT ${diff} OFF)</span>`;
+        } else if (percentOff >= 5) {
             discountHtml = `<span style="color:#FF905A; font-size:13px; font-weight:700;">(${percentOff}% OFF)</span>`;
         } else {
             discountHtml = `<span style="color:#FF905A; font-size:13px; font-weight:700;">(BDT ${diff} OFF)</span>`;
         }
         
-        // FIX: Original price reduced to 14px to fix optical illusion
         oldPriceHtml = `<span style="font-size:14px; color:#7E818C; font-weight:400; margin-right:6px;">MRP <span style="text-decoration:line-through;">BDT ${currentProduct.original_price}</span></span>`;
     } else {
-        // FIX: Prefix reduced to 14px
         currentPricePrefix = `<span style="font-size:14px; color:#7E818C; font-weight:400; margin-right:4px;">MRP</span>`;
     }
     
@@ -587,18 +573,26 @@ function renderSimilarProducts(allProds, currProd) {
     let leftColHtml = ''; let rightColHtml = '';
     
     similar.forEach((p, index) => {
+        // --- SMART DISCOUNT PSYCHOLOGY MATH ---
         let discountHtml = "";
         if (p.original_price && p.original_price > p.price) {
             const diff = p.original_price - p.price;
             const percentOff = Math.round((diff / p.original_price) * 100);
-            if (percentOff > 5) discountHtml = `<span class="p-discount">(${percentOff}% OFF)</span>`;
-            else discountHtml = `<span class="p-discount">(BDT ${diff} OFF)</span>`;
+            
+            if (percentOff >= 15) {
+                discountHtml = `<span class="p-discount">(${percentOff}% OFF)</span>`;
+            } else if (diff >= 100) {
+                discountHtml = `<span class="p-discount">(BDT ${diff} OFF)</span>`;
+            } else if (percentOff >= 5) {
+                discountHtml = `<span class="p-discount">(${percentOff}% OFF)</span>`;
+            } else {
+                discountHtml = `<span class="p-discount">(BDT ${diff} OFF)</span>`;
+            }
         }
         
         let subTitle = p.type || "Fashion";
         if (p.sub_type) subTitle += ` - ${p.sub_type}`;
 
-        // FIX: Ultra-compact string to guarantee zero leading space before BDT
         const priceRowContent = p.original_price 
             ? `<span class="p-old-price">BDT ${p.original_price}</span><span class="p-price">BDT ${p.price}</span>${discountHtml}`
             : `<span class="p-price">BDT ${p.price}</span>${discountHtml}`;
@@ -674,7 +668,44 @@ if (currentAction === 'buy') {
     closeModal();
 }
 }
+// --- FULLSCREEN MODAL SWIPE CONTROLS ---
+let fsTouchstartX = 0;
+let fsTouchendX = 0;
+
+function handleFsSwipe() {
+    // Only proceed if there are multiple images to swipe through
+    if (!currentProduct || !currentProduct.images || currentProduct.images.length <= 1) return;
+
+    if (fsTouchendX < fsTouchstartX - 40) {
+        // Swipe Left -> Next Image
+        swipeNext();
+        const fsImg = document.getElementById('fs-img');
+        if (fsImg) fsImg.src = currentProduct.images[currentImageIndex];
+    }
+    if (fsTouchendX > fsTouchstartX + 40) {
+        // Swipe Right -> Previous Image
+        swipePrev();
+        const fsImg = document.getElementById('fs-img');
+        if (fsImg) fsImg.src = currentProduct.images[currentImageIndex];
+    }
+}
+
+// Bind Touch Listeners globally to the Fullscreen Modal
+const fsModal = document.getElementById('fs-modal');
+if (fsModal) {
+    fsModal.addEventListener('touchstart', e => {
+        fsTouchstartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    fsModal.addEventListener('touchend', e => {
+        fsTouchendX = e.changedTouches[0].screenX;
+        handleFsSwipe();
+    }, { passive: true });
+}
+
+// Initialize Product Details
 loadDetails();
+
 window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
         window.location.reload();

@@ -8,23 +8,7 @@
     
 
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-    <!-- AUTO-INJECTED META PIXEL -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1503656738058759');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1503656738058759&ev=PageView&noscript=1"/></noscript>
-    <!-- END AUTO-INJECTED META PIXEL -->
-    </head>
+</head>
 <body>
 
     <!-- Sidebar -->
@@ -508,6 +492,7 @@ function handleSort(sortType, clickedElement) {
 // --- 5. GRID DRAWING & SMART IMAGE LOADING ---
 // --- 5. GRID DRAWING & SMART IMAGE LOADING ---
 // --- 5. GRID DRAWING & SMART IMAGE LOADING ---
+// --- 5. GRID DRAWING & SMART IMAGE LOADING ---
 function renderGrid(productsToDraw, append = false) {
     const grid = document.getElementById('grid');
     
@@ -531,13 +516,18 @@ function renderGrid(productsToDraw, append = false) {
         const globalIndex = renderedCount + index;
         const lazyAttr = globalIndex < 4 ? 'loading="eager"' : 'loading="lazy"';
         
-        // --- DYNAMIC DISCOUNT MATH (5% THRESHOLD) ---
+        // --- SMART DISCOUNT PSYCHOLOGY MATH ---
         let discountHtml = "";
         if (p.original_price && p.original_price > p.price) {
             const diff = p.original_price - p.price;
             const percentOff = Math.round((diff / p.original_price) * 100);
             
-            if (percentOff > 5) {
+            // Logic: High % always looks good, flat 100+ BDT looks huge, fallback to 5%+ or tiny flat amounts
+            if (percentOff >= 15) {
+                discountHtml = `<span class="p-discount">(${percentOff}% OFF)</span>`;
+            } else if (diff >= 100) {
+                discountHtml = `<span class="p-discount">(BDT ${diff} OFF)</span>`;
+            } else if (percentOff >= 5) {
                 discountHtml = `<span class="p-discount">(${percentOff}% OFF)</span>`;
             } else {
                 discountHtml = `<span class="p-discount">(BDT ${diff} OFF)</span>`;
@@ -547,7 +537,6 @@ function renderGrid(productsToDraw, append = false) {
         let subTitle = p.type || "Fashion";
         if (p.sub_type) subTitle += ` - ${p.sub_type}`;
 
-        // FIX: Ultra-compact string to guarantee zero leading space before BDT
         const priceRowContent = p.original_price 
             ? `<span class="p-old-price">BDT ${p.original_price}</span><span class="p-price">BDT ${p.price}</span>${discountHtml}`
             : `<span class="p-price">BDT ${p.price}</span>${discountHtml}`;
